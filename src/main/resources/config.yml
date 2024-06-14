@@ -1,3 +1,17 @@
-main:
-  trails:
-    material: BLAZE_POWDER
+back-command: bossshop open cosmetics %player%
+    
+playertrails:
+  soulflame:
+    name: "&3Soul Flame"
+    permission: trails.soulflame
+    effect: SOUL_FIRE_FLAME
+    
+projectiletrails:
+  soulflame:
+    name: "&3Soul Flame"
+    permission: trails.projectile.soulflame
+        
+wings:
+  soulflame:
+    name: "&3Soul Flame"
+    permission: trails.wings.soulflame

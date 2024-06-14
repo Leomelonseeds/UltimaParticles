@@ -6,4 +6,6 @@ author: M310N
 description: Wrapper plugin for PlayerParticles to provide a GUI for Ultima
 depend: [ PlayerParticles ]
 commands:
-  particles: { }
+  playertrails: { }
+  projectiletrails: { }
+  wings: { }
