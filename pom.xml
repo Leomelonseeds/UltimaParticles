@@ -82,6 +82,10 @@
 			<id>rwd-repo</id>
 			<url>https://repo.rosewooddev.io/repository/public/</url>
 		</repository>
+        <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
 	</repositories>
 
 	<dependencies>
@@ -102,5 +106,10 @@
 			<artifactId>XSeries</artifactId>
 			<version>9.8.1</version>
 		</dependency>
+        <dependency>
+            <groupId>co.aikar</groupId>
+            <artifactId>acf-paper</artifactId>
+            <version>0.5.1-SNAPSHOT</version>
+        </dependency>
 	</dependencies>
 </project>
