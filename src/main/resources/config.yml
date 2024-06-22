@@ -1,4 +1,36 @@
 back-command: bossshop open cosmetics %player%
+
+mainmenu:
+  playertrails:
+    name: "&6Player Trails"
+    material: BLAZE_POWDER
+    lore:
+      - "&7Show off with a wide selection of"
+      - "&7particles and styles"
+    slot: 20
+  projectiletrails:
+    name: "&6Projectile Trails"
+    material: SPECTRAL_ARROW
+    lore:
+      - "&7Effects added to all projectiles,"
+      - "&7including arrows, eggs, snowballs,"
+      - "&7potions, and more."
+    slot: 22
+  wings:
+    name: "&dWings"
+    material: ELYTRA
+    lore:
+      - "&7Wear majestic, particle wings to outshine"
+      - "&7your friends and foes. Requires"
+      - "&6&lDIVINE &7rank."
+    slot: 24
+  remove:
+    name: "&cRemove All"
+    material: BARRIER
+    lore:
+      - "&7Click to remove all currently selected"
+      - "&7particles from your character."
+    
     
 playertrails:
   soulflame:
