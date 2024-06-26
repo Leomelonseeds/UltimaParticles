@@ -1,4 +1,16 @@
 back-command: bossshop open cosmetics %player%
+back-item:
+  name: "&cBack"
+  material: RED_STAINED_GLASS_PANE
+next-item:
+  name: "&fNext Page"
+  material: ARROW
+previous-item:
+  name: "&fPrevious Page"
+  material: ARROW
+text-selected: "&aSelected!"
+text-unlocked: "&eClick to select!"
+text-locked: "&cLocked"
 
 mainmenu:
   playertrails:
@@ -30,20 +42,61 @@ mainmenu:
     lore:
       - "&7Click to remove all currently selected"
       - "&7particles from your character."
+    slot: 4
     
-    
+# Style types: https://javadoc.rosewooddev.io/PlayerParticles/dev/esophose/playerparticles/styles/DefaultStyles.html
+# Particle options: https://javadoc.rosewooddev.io/PlayerParticles/dev/esophose/playerparticles/particles/ParticleEffect.html
+# Use the getInternalStyleName() for all playertrails.style.styles entries!!!
 playertrails:
-  soulflame:
-    name: "&3Soul Flame"
-    permission: trails.soulflame
-    effect: SOUL_FIRE_FLAME
+  remove:
+    name: "&cRemove Player Trail"
+    material: BARRIER
+    lore:
+      - "&7Click to remove all player trail"
+      - "&7particles from your character."
+  style:
+    item:
+      name: "&7Current Style: &f&l%style%"
+      lore:
+        - "%style_switcher%"
+        - ""
+        - "&fClick to cycle"
+    styles:
+      normal:
+        name: "Normal"
+        permission: group.guest
+  trails:
+    soulflame:
+      name: "&3Soul Flame"
+      permission: trails.soulflame
+      effect: SOUL_FIRE_FLAME
+    melon:
+      name: "&aMelon"
+      material: MELON
+      permission: trails.melon
+      effect: ITEM
+      data: MELON
     
 projectiletrails:
-  soulflame:
-    name: "&3Soul Flame"
-    permission: trails.projectile.soulflame
+  remove:
+    name: "&cRemove Projectile Trail"
+    material: BARRIER
+    lore:
+      - "&7Click to remove all projectile trail"
+      - "&7particles from your character."
+  trails:
+    soulflame:
+      name: "&3Soul Flame"
+      permission: trails.projectile.soulflame
         
 wings:
-  soulflame:
-    name: "&3Soul Flame"
-    permission: trails.wings.soulflame
+  remove:
+    name: "&cRemove Wings"
+    material: BARRIER
+    lore:
+      - "&7Click to remove all wings"
+      - "&7particles from your character."
+  trails:
+    soulflame:
+      name: "&3Soul Flame"
+      permission: trails.wings.soulflame

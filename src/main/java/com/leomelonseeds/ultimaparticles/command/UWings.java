@@ -4,13 +4,15 @@ import org.bukkit.entity.Player;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 
-@CommandAlias("particletrails")
-public class ParticleTrails extends BaseCommand {
+@CommandAlias("wings")
+public class UWings extends BaseCommand {
     
     @Default
-    public void onTrail(Player p) {
+    @CommandPermission("trails.wings")
+    public void onWing(Player p) {
         // TODO
     }
 
