@@ -1,20 +1,19 @@
 package com.leomelonseeds.ultimaparticles.inv;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 import com.leomelonseeds.ultimaparticles.UltimaParticles;
 import com.leomelonseeds.ultimaparticles.util.Utils;
 
 public class MainMenu extends UPInventory {
-    
-    private Player player;
 
     public MainMenu(Player player) {
         super(player, 45, "Trails");
-        this.player = player;
     }
 
     @Override
@@ -38,8 +37,31 @@ public class MainMenu extends UPInventory {
 
     @Override
     public void registerClick(int slot, ClickType type) {
-        // TODO Auto-generated method stub
+        ItemStack item = inv.getItem(slot);
+        if (item == null) {
+            return;
+        }
         
+        String id = Utils.getItemID(item);
+        if (id == null) {
+            return;
+        }
+        
+        if (id.equals("back-item")) {
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), UltimaParticles.getPlugin().getConfig()
+                    .getString("back-command").replace("%player%", player.getName()));
+            return;
+        }
+        
+        if (id.equals("remove")) {
+            Utils.clearParticles(player, null);
+            return;
+        }
+        
+        if (id.equals("playertrails")) {
+            new PlayerTrails(player);
+            return;
+        }
     }
     
 }

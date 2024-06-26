@@ -13,6 +13,7 @@ public abstract class UPInventory {
     
     protected static InventoryManager manager = UltimaParticles.getPlugin().getInvs();
     protected Inventory inv;
+    protected Player player;
     
     public UPInventory(Player player, int size, String title) {
         inv = Bukkit.createInventory(null, size, Utils.toComponent(title));
@@ -25,6 +26,7 @@ public abstract class UPInventory {
     }
     
     private void register(Player player) {
+        this.player = player;
         manager.registerInventory(player, this);
     }
     

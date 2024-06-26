@@ -21,7 +21,7 @@ mainmenu:
       - "&7particles and styles"
     slot: 20
   projectiletrails:
-    name: "&6Projectile Trails"
+    name: "&eProjectile Trails"
     material: SPECTRAL_ARROW
     lore:
       - "&7Effects added to all projectiles,"
@@ -55,27 +55,29 @@ playertrails:
       - "&7Click to remove all player trail"
       - "&7particles from your character."
   style:
-    item:
-      name: "&7Current Style: &f&l%style%"
+    style-item:
+      name: "&6Current Style: &f&l%style%"
+      material: ENDER_CHEST
       lore:
-        - "%style_switcher%"
-        - ""
-        - "&fClick to cycle"
+        - "&7Click to view styles"
     styles:
       normal:
-        name: "Normal"
+        name: "&fNormal"
         permission: group.guest
+      overhead:
+        name: "&fRain"
+        permission: trails.rains
   trails:
-    soulflame:
-      name: "&3Soul Flame"
-      permission: trails.soulflame
+    bluefire:
+      name: "&3Blue Fire"
+      permission: trails.bluefire
       effect: SOUL_FIRE_FLAME
     melon:
       name: "&aMelon"
-      material: MELON
+      material: MELON_SLICE
       permission: trails.melon
       effect: ITEM
-      data: MELON
+      data: MELON_SLICE
     
 projectiletrails:
   remove:
@@ -86,8 +88,8 @@ projectiletrails:
       - "&7particles from your character."
   trails:
     soulflame:
-      name: "&3Soul Flame"
-      permission: trails.projectile.soulflame
+      name: "&3Blue Fire"
+      permission: trails.projectile.bluefire
         
 wings:
   remove:
@@ -97,6 +99,6 @@ wings:
       - "&7Click to remove all wings"
       - "&7particles from your character."
   trails:
-    soulflame:
-      name: "&3Soul Flame"
-      permission: trails.wings.soulflame
+    bluefire:
+      name: "&3Blue Fire"
+      permission: trails.allwings

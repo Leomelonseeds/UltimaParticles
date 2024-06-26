@@ -1,19 +1,16 @@
 package com.leomelonseeds.ultimaparticles.inv;
 
 import java.util.Collection;
-import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 
 import com.leomelonseeds.ultimaparticles.UltimaParticles;
+import com.leomelonseeds.ultimaparticles.custom.UParticleStyle;
 import com.leomelonseeds.ultimaparticles.util.Utils;
 
 import dev.esophose.playerparticles.api.PlayerParticlesAPI;
@@ -29,13 +26,11 @@ public class PlayerTrails extends UPPaginatedInventory {
     private static String defaultStyle = "normal";
     
     private PlayerParticlesAPI ppapi;
-    private Player player;
     private Collection<ParticlePair> activeParticles;
 
     public PlayerTrails(Player player) {
         super(player, 54, "Player Trails", 9);
         this.ppapi = UltimaParticles.getPlugin().getParticles();
-        this.player = player;
         updateActiveParticles();
     }
     
@@ -52,14 +47,18 @@ public class PlayerTrails extends UPPaginatedInventory {
             }
         }
         
-        // TODO: Style button
-        // ItemStack styleItem = Utils.createItem'
+        // Style button
+        ItemStack styleItem = Utils.createItem("playertrails.style.style-item");
+        ItemMeta smeta = styleItem.getItemMeta();
+        String name = Utils.toPlain(smeta.displayName());
+        name = name.replace("%style%", UltimaParticles.getPlugin().getConfig()
+                .getString("playertrails.style.styles." + getStyle()));
+        smeta.displayName(Utils.toComponent(name));
+        styleItem.setItemMeta(smeta);
+        inv.setItem(3, styleItem);
         
         // Clear button
         inv.setItem(5, Utils.createItem("playertrails.remove"));
-        
-        // Back button
-        inv.setItem(49, Utils.createItem("back-item"));
     }
 
     @Override
@@ -68,124 +67,17 @@ public class PlayerTrails extends UPPaginatedInventory {
     }
 
     @Override
-    protected ItemStack getDisplayItem(ConfigurationSection section) {
-        ParticleEffect peffect = ParticleEffect.valueOf(section.getString("effect"));
-        ItemStack item = new ItemStack(section.contains("material") ? 
-                Material.valueOf(section.getString("material")) : peffect.getGuiIconMaterial());
-        ItemMeta meta = item.getItemMeta();
-        meta.displayName(Utils.toComponent(section.getString("name")));
-
-        String style = getStyle();
-        String loreNode = "text-unlocked";
-        if (!player.hasPermission(section.getString("permission"))) {
-            loreNode = "text-locked";
-        } else {
-            for (ParticlePair pp : activeParticles) {
-                if (!pp.getEffect().equals(peffect) || !pp.getStyle().getInternalName().equals(style)) {
-                    continue;
-                }
-                
-                meta.addEnchant(Enchantment.DURABILITY, 1, true);
-                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
-                loreNode = "text-selected";
-                break;
-            }
+    protected void registerPaginatedClick(int slot, ClickType type, ItemStack item, String id) {
+        if (id.equals("style-item")) {
+            new StyleSelector(player, this);
+            return;
         }
-        
-        String lore = UltimaParticles.getPlugin().getConfig().getString(loreNode);
-        meta.lore(List.of(Utils.toComponent(lore)));
-        
-        meta.getPersistentDataContainer().set(UltimaParticles.itemKey, PersistentDataType.STRING, section.getName());
-        item.setItemMeta(meta);
-        
-        return item;
     }
-
+    
     @Override
-    public void registerPaginatedClick(int slot, ClickType type, ItemStack item, String id) {
-        if (id.equals("remove")) {
-            clearParticles();
-            updateInventory();
-            player.sendMessage(Utils.toComponent("&7Cleared your player trail."));
-            return;
-        }
-        
-        // TODO: Style code
-        
-        ConfigurationSection trail = sec.getConfigurationSection(id);
-        if (trail == null) {
-            return;
-        }
-        
+    protected void applyTrail(ConfigurationSection trail) {
         String effect = trail.getString("effect");
         String data = trail.getString("data");
-        applyParticle(effect, data);
-        updateInventory();
-    }
-    
-    private String getStyle() {
-        for (ParticlePair pp : activeParticles) {
-            if (pp.getBlockMaterial() != Material.BARRIER) {
-                continue;
-            }
-            
-            return pp.getStyle().getInternalName();
-        }
-        
-        return defaultStyle;
-    }
-    
-    private void clearParticles() {
-        String style = getStyle();
-        ParticleStyle pstyle = ParticleStyle.fromInternalName(style);
-        ppapi.resetActivePlayerParticles(player);
-        if (style.equals(defaultStyle)) {
-            return;
-        }
-        
-        ppapi.addActivePlayerParticle(player, ParticleEffect.BLOCK, pstyle, Material.BARRIER);
-        updateActiveParticles();
-    }
-    
-    /**
-     * Change style for a player.
-     * 
-     * @param player
-     * @param style
-     */
-    private void applyStyle(String style) {
-        int storedid = -1;
-        for (ParticlePair pp : activeParticles) {
-            if (pp.getBlockMaterial() == Material.BARRIER) {
-                storedid = pp.getId();
-                break;
-            }
-        }
-        
-        ParticleStyle pstyle = ParticleStyle.fromInternalName(style);
-        if (storedid == -1) {
-            ppapi.addActivePlayerParticle(player, ParticleEffect.BLOCK, pstyle, Material.BARRIER);
-        } else {
-            ppapi.editActivePlayerParticle(player, storedid, pstyle);
-        }
-        
-        if (style.equals("rain")) {
-            ppapi.addActivePlayerParticle(player, ParticleEffect.CLOUD, DefaultStyles.OVERHEAD);
-        } else {
-            ppapi.removeActivePlayerParticles(player, ParticleEffect.CLOUD);
-        }
-        
-        updateActiveParticles();
-    }
-    
-    /**
-     * Data is an optional string that can be included in the section for Material
-     * 
-     * @param player
-     * @param effect
-     * @param data
-     */
-    private void applyParticle(String effect, String data) {
         String style = getStyle();
         ParticleStyle pstyle = ParticleStyle.fromInternalName(style);
         ppapi.removeActivePlayerParticles(player, pstyle);
@@ -208,5 +100,70 @@ public class PlayerTrails extends UPPaginatedInventory {
         }
         
         updateActiveParticles();
+    }
+    
+    @Override
+    protected boolean isSelected(ParticleEffect effect) {
+        String style = getStyle();
+        for (ParticlePair pp : activeParticles) {
+            if (pp.getEffect().equals(effect)  && pp.getStyle().getInternalName().equals(style)) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    public String getStyle() {
+        for (ParticlePair pp : activeParticles) {
+            if (pp.getBlockMaterial() != Material.BARRIER) {
+                continue;
+            }
+            
+            return pp.getStyle().getInternalName();
+        }
+        
+        return defaultStyle;
+    }
+    
+    /**
+     * Change style for a player.
+     * 
+     * @param player
+     * @param style
+     */
+    public void applyStyle(String style) {
+        // Apply special cloud for rain trails
+        if (style.equals("overhead")) {
+            ppapi.addActivePlayerParticle(player, ParticleEffect.CLOUD, DefaultStyles.OVERHEAD);
+        } else {
+            ppapi.removeActivePlayerParticles(player, ParticleEffect.CLOUD);
+        }
+        
+        ParticleStyle pstyle = ParticleStyle.fromInternalName(style);
+        int storedid = -1;
+        for (ParticlePair pp : activeParticles) {
+            if (pp.getBlockMaterial() == Material.BARRIER) {
+                storedid = pp.getId();
+            }
+            
+            String curStyle = pp.getStyle().getInternalName();
+            if (curStyle.equals("arrows") || curStyle.equals("fishing") || curStyle.contains("wings")) {
+                continue;
+            }
+            
+            ppapi.editActivePlayerParticle(player, pp.getId(), pstyle);
+        }
+        
+        if (storedid == -1 && !style.equals(defaultStyle)) {
+            ppapi.addActivePlayerParticle(player, ParticleEffect.BLOCK, pstyle, Material.BARRIER);
+        }
+        
+        updateActiveParticles();
+    }
+
+    @Override
+    protected UParticleStyle getUStyle() {
+        return UParticleStyle.PLAYER;
     }
 }

@@ -20,7 +20,7 @@ public class StyleHandler implements Listener {
         this.customStyles = new HashSet<>();
         
         // Create custom styles
-        customStyles.add(new ParticleStyleRain());
+        // customStyles.add(new ParticleStyleRain());
     }
     
     @EventHandler
