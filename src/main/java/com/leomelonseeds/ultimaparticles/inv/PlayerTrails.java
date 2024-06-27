@@ -74,18 +74,6 @@ public class PlayerTrails extends UPPaginatedInventory {
     }
     
     @Override
-    protected boolean isSelected(ParticleEffect effect) {
-        String style = getStyle();
-        for (ParticlePair pp : activeParticles) {
-            if (pp.getEffect().equals(effect)  && pp.getStyle().getInternalName().equals(style)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    @Override
     protected List<String> getStyles() {
         for (ParticlePair pp : activeParticles) {
             if (pp.getBlockMaterial() != Material.BARRIER) {

@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -22,6 +24,7 @@ import com.leomelonseeds.ultimaparticles.util.Utils;
 import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import dev.esophose.playerparticles.particles.ParticleEffect;
 import dev.esophose.playerparticles.particles.ParticlePair;
+import dev.esophose.playerparticles.particles.data.ColorTransition;
 import dev.esophose.playerparticles.particles.data.NoteColor;
 import dev.esophose.playerparticles.particles.data.OrdinaryColor;
 import dev.esophose.playerparticles.styles.ParticleStyle;
@@ -88,7 +91,7 @@ public abstract class UPPaginatedInventory extends UPInventory {
             String loreNode = "text-unlocked";
             if (!player.hasPermission(section.getString("permission"))) {
                 loreNode = "text-locked";
-            } else if (isSelected(peffect)) {
+            } else if (isSelected(peffect, section.getString("data"))) {
                 meta.addEnchant(Enchantment.DURABILITY, 1, true);
                 meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
                 loreNode = "text-selected";
@@ -162,8 +165,11 @@ public abstract class UPPaginatedInventory extends UPInventory {
                         ppapi.addActivePlayerParticle(player, ParticleEffect.ITEM, pstyle, Material.valueOf(data));
                         break;
                     case "DUST":
-                        ppapi.addActivePlayerParticle(player, ParticleEffect.DUST, pstyle, 
-                                data.equals("RANDOM") ? OrdinaryColor.RANDOM : OrdinaryColor.RAINBOW);
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.DUST, pstyle, getColor(data));
+                        break;
+                    case "DUST_COLOR_TRANSITION":
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.DUST_COLOR_TRANSITION, pstyle, 
+                                new ColorTransition(OrdinaryColor.RANDOM, OrdinaryColor.RANDOM));
                         break;
                     case "NOTE":
                         ppapi.addActivePlayerParticle(player, ParticleEffect.NOTE, pstyle, 
@@ -188,11 +194,46 @@ public abstract class UPPaginatedInventory extends UPInventory {
         registerPaginatedClick(slot, type, item, id);
     }
     
+    private OrdinaryColor getColor(String data) {
+        if (data.equals("RANDOM")) {
+            return OrdinaryColor.RANDOM;
+        }
+        
+        if (data.equals("RAINBOW")) {
+            return OrdinaryColor.RAINBOW;
+        }
+        
+        Color color = DyeColor.valueOf(data).getColor();
+        return new OrdinaryColor(color.getRed(), color.getGreen(), color.getBlue());
+    }
+    
+    /**
+     * Data must not be null if effect is DUST
+     * 
+     * @param effect
+     * @param data
+     * @return
+     */
+    private boolean isSelected(ParticleEffect effect, String data) {
+        List<String> styles = getStyles();
+        for (ParticlePair pp : activeParticles) {
+            if (!styles.contains(pp.getStyle().getInternalName()) || !pp.getEffect().equals(effect)) {
+                continue;
+            }
+            
+            if (effect.equals(ParticleEffect.DUST) && !pp.getColor().equals(getColor(data))) {
+                continue;
+            }
+            
+            return true;
+        }
+        
+        return false;
+    }
+    
     protected void updateActiveParticles() {
         this.activeParticles = ppapi.getActivePlayerParticles(player);
     }
-    
-    protected abstract boolean isSelected(ParticleEffect effect);
     
     protected abstract void applyTrailHelper(ConfigurationSection sec, ParticleStyle pstyle);
     

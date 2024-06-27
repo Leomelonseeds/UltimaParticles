@@ -11,8 +11,6 @@ import org.bukkit.inventory.ItemStack;
 import com.leomelonseeds.ultimaparticles.custom.UParticleStyle;
 import com.leomelonseeds.ultimaparticles.util.Utils;
 
-import dev.esophose.playerparticles.particles.ParticleEffect;
-import dev.esophose.playerparticles.particles.ParticlePair;
 import dev.esophose.playerparticles.styles.DefaultStyles;
 import dev.esophose.playerparticles.styles.ParticleStyle;
 
@@ -23,17 +21,6 @@ public class ProjectileTrails extends UPPaginatedInventory {
     
     public ProjectileTrails(Player player) {
         super(player, 54, "Projectile Trails", 9);
-    }
-
-    @Override
-    protected boolean isSelected(ParticleEffect effect) {
-        for (ParticlePair pp : activeParticles) {
-            if (pp.getEffect().equals(effect)  && pp.getStyle().equals(arrowStyle)) {
-                return true;
-            }
-        }
-        
-        return false;
     }
 
     @Override
