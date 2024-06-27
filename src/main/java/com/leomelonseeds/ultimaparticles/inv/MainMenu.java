@@ -62,6 +62,21 @@ public class MainMenu extends UPInventory {
             new PlayerTrails(player);
             return;
         }
+        
+        if (id.equals("projectiletrails")) {
+            new ProjectileTrails(player);
+            return;
+        }
+        
+        if (id.equals("wings")) {
+            if (!player.hasPermission("group.divine")) {
+                player.sendMessage(Utils.toComponent("&cThese trails require the &6&lDIVINE &crank!"));
+                Utils.playSelectSound(player, false);
+                return;
+            }
+            new Wings(player);
+            return;
+        }
     }
     
 }

@@ -87,9 +87,10 @@ projectiletrails:
       - "&7Click to remove all projectile trail"
       - "&7particles from your character."
   trails:
-    soulflame:
+    bluefire:
       name: "&3Blue Fire"
       permission: trails.projectile.bluefire
+      effect: SOUL_FIRE_FLAME
         
 wings:
   remove:
@@ -101,4 +102,5 @@ wings:
   trails:
     bluefire:
       name: "&3Blue Fire"
+      effect: SOUL_FIRE_FLAME
       permission: trails.allwings

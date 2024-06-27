@@ -1,6 +1,6 @@
 package com.leomelonseeds.ultimaparticles.inv;
 
-import java.util.Collection;
+import java.util.List;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -13,29 +13,17 @@ import com.leomelonseeds.ultimaparticles.UltimaParticles;
 import com.leomelonseeds.ultimaparticles.custom.UParticleStyle;
 import com.leomelonseeds.ultimaparticles.util.Utils;
 
-import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import dev.esophose.playerparticles.particles.ParticleEffect;
 import dev.esophose.playerparticles.particles.ParticlePair;
-import dev.esophose.playerparticles.particles.data.NoteColor;
-import dev.esophose.playerparticles.particles.data.OrdinaryColor;
 import dev.esophose.playerparticles.styles.DefaultStyles;
 import dev.esophose.playerparticles.styles.ParticleStyle;
 
 public class PlayerTrails extends UPPaginatedInventory {
     
     private static String defaultStyle = "normal";
-    
-    private PlayerParticlesAPI ppapi;
-    private Collection<ParticlePair> activeParticles;
 
     public PlayerTrails(Player player) {
         super(player, 54, "Player Trails", 9);
-        this.ppapi = UltimaParticles.getPlugin().getParticles();
-        updateActiveParticles();
-    }
-    
-    private void updateActiveParticles() {
-        this.activeParticles = ppapi.getActivePlayerParticles(player);
     }
 
     @Override
@@ -52,7 +40,7 @@ public class PlayerTrails extends UPPaginatedInventory {
         ItemMeta smeta = styleItem.getItemMeta();
         String name = Utils.toPlain(smeta.displayName());
         name = name.replace("%style%", UltimaParticles.getPlugin().getConfig()
-                .getString("playertrails.style.styles." + getStyle()));
+                .getString("playertrails.style.styles." + getStyle() + ".name"));
         smeta.displayName(Utils.toComponent(name));
         styleItem.setItemMeta(smeta);
         inv.setItem(3, styleItem);
@@ -75,31 +63,14 @@ public class PlayerTrails extends UPPaginatedInventory {
     }
     
     @Override
-    protected void applyTrail(ConfigurationSection trail) {
-        String effect = trail.getString("effect");
-        String data = trail.getString("data");
-        String style = getStyle();
-        ParticleStyle pstyle = ParticleStyle.fromInternalName(style);
-        ppapi.removeActivePlayerParticles(player, pstyle);
-        switch (effect) {
-            case "ITEM":
-                ppapi.addActivePlayerParticle(player, ParticleEffect.ITEM, pstyle, Material.valueOf(data));
-                break;
-            case "DUST":
-                ppapi.addActivePlayerParticle(player, ParticleEffect.DUST, pstyle, OrdinaryColor.RAINBOW);
-                break;
-            case "NOTE":
-                ppapi.addActivePlayerParticle(player, ParticleEffect.NOTE, pstyle, NoteColor.RAINBOW);
-                break;
-            default:
-                ppapi.addActivePlayerParticle(player, ParticleEffect.valueOf(effect), pstyle);
-        }
-        
-        if (!style.equals(defaultStyle)) {
+    protected void applyTrailHelper(ConfigurationSection trail, ParticleStyle pstyle) {
+        if (!pstyle.getInternalName().equals(defaultStyle)) {
             ppapi.addActivePlayerParticle(player, ParticleEffect.BLOCK, pstyle, Material.BARRIER);;
         }
         
-        updateActiveParticles();
+        if (pstyle.equals(DefaultStyles.OVERHEAD)) {
+            ppapi.addActivePlayerParticle(player, ParticleEffect.CLOUD, pstyle);;
+        }
     }
     
     @Override
@@ -114,16 +85,21 @@ public class PlayerTrails extends UPPaginatedInventory {
         return false;
     }
     
-    public String getStyle() {
+    @Override
+    protected List<String> getStyles() {
         for (ParticlePair pp : activeParticles) {
             if (pp.getBlockMaterial() != Material.BARRIER) {
                 continue;
             }
             
-            return pp.getStyle().getInternalName();
+            return List.of(pp.getStyle().getInternalName());
         }
         
-        return defaultStyle;
+        return List.of(defaultStyle);
+    }
+    
+    public String getStyle() {
+        return getStyles().get(0);
     }
     
     /**
@@ -147,8 +123,7 @@ public class PlayerTrails extends UPPaginatedInventory {
                 storedid = pp.getId();
             }
             
-            String curStyle = pp.getStyle().getInternalName();
-            if (curStyle.equals("arrows") || curStyle.equals("fishing") || curStyle.contains("wings")) {
+            if (!getUStyle().isType(pp.getStyle().getInternalName())) {
                 continue;
             }
             

@@ -1,6 +1,7 @@
 package com.leomelonseeds.ultimaparticles.inv;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -18,11 +19,18 @@ import com.leomelonseeds.ultimaparticles.UltimaParticles;
 import com.leomelonseeds.ultimaparticles.custom.UParticleStyle;
 import com.leomelonseeds.ultimaparticles.util.Utils;
 
+import dev.esophose.playerparticles.api.PlayerParticlesAPI;
 import dev.esophose.playerparticles.particles.ParticleEffect;
+import dev.esophose.playerparticles.particles.ParticlePair;
+import dev.esophose.playerparticles.particles.data.NoteColor;
+import dev.esophose.playerparticles.particles.data.OrdinaryColor;
+import dev.esophose.playerparticles.styles.ParticleStyle;
 
 public abstract class UPPaginatedInventory extends UPInventory {
-    
+
+    protected PlayerParticlesAPI ppapi;
     protected ConfigurationSection sec;
+    protected Collection<ParticlePair> activeParticles;
     private int start;
     private int page;
 
@@ -37,9 +45,11 @@ public abstract class UPPaginatedInventory extends UPInventory {
      */
     public UPPaginatedInventory(Player player, int size, String title, int start) {
         super(player, size, title);
+        this.ppapi = UltimaParticles.getPlugin().getParticles();
         this.start = start;
         this.sec = getSection();
         this.page = 0;
+        updateActiveParticles();
     }
     
     @Override
@@ -141,8 +151,33 @@ public abstract class UPPaginatedInventory extends UPInventory {
                 return;
             }
 
-            applyTrail(trail);
+            // Find effect and apply it
+            String effect = trail.getString("effect");
+            String data = trail.getString("data");
+            for (String style : getStyles()) {
+                ParticleStyle pstyle = ParticleStyle.fromInternalName(style);
+                ppapi.removeActivePlayerParticles(player, pstyle);
+                switch (effect) {
+                    case "ITEM":
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.ITEM, pstyle, Material.valueOf(data));
+                        break;
+                    case "DUST":
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.DUST, pstyle, OrdinaryColor.RAINBOW);
+                        break;
+                    case "NOTE":
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.NOTE, pstyle, NoteColor.RAINBOW);
+                        break;
+                    default:
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.valueOf(effect), pstyle);
+                }
+                
+                // Do additional tasks if needed
+                applyTrailHelper(trail, pstyle); 
+            }
+            
+            // Update particles and inventory
             Utils.playSelectSound(player, true);
+            updateActiveParticles();
             updateInventory();
             return;
         }
@@ -151,9 +186,13 @@ public abstract class UPPaginatedInventory extends UPInventory {
         registerPaginatedClick(slot, type, item, id);
     }
     
+    protected void updateActiveParticles() {
+        this.activeParticles = ppapi.getActivePlayerParticles(player);
+    }
+    
     protected abstract boolean isSelected(ParticleEffect effect);
     
-    protected abstract void applyTrail(ConfigurationSection sec);
+    protected abstract void applyTrailHelper(ConfigurationSection sec, ParticleStyle pstyle);
     
     protected abstract void updateNonPaginatedInventory();
     
@@ -162,4 +201,6 @@ public abstract class UPPaginatedInventory extends UPInventory {
     protected abstract ConfigurationSection getSection();
     
     protected abstract UParticleStyle getUStyle();
+    
+    protected abstract List<String> getStyles();
 }
