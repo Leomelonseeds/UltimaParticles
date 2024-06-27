@@ -25,7 +25,7 @@ public class StyleSelector extends UPInventory {
     private int start;
 
     public StyleSelector(Player player, PlayerTrails prevMenu) {
-        super(player, 45, "Style Selection");
+        super(player, 54, "Style Selection");
         this.prevMenu = prevMenu;
         this.styleConfig = UltimaParticles.getPlugin().getConfig().getConfigurationSection("playertrails.style.styles");
         this.start = 19;
@@ -34,14 +34,14 @@ public class StyleSelector extends UPInventory {
     @Override
     public void updateInventory() {
         // Glass panes
-        for (int i : new int[] {0, 36}) {
+        for (int i : new int[] {0, 45}) {
             for (int j = 0; j < 9; j++) {
                 inv.setItem(i + j, Utils.createBlankItem(Material.ORANGE_STAINED_GLASS_PANE));
             }
         }
         
         // Back item
-        inv.setItem(40, Utils.createItem("back-item"));
+        inv.setItem(49, Utils.createItem("back-item"));
         
         // Styles
         int curIndex = start;
@@ -67,7 +67,13 @@ public class StyleSelector extends UPInventory {
             
             meta.getPersistentDataContainer().set(UltimaParticles.itemKey, PersistentDataType.STRING, section.getName());
             item.setItemMeta(meta);
-            inv.setItem(curIndex++, item);
+            inv.setItem(curIndex, item);
+            
+            if (curIndex % 9 == 7) {
+                curIndex += 3;
+            } else {
+                curIndex++;
+            }
         }
     }
 

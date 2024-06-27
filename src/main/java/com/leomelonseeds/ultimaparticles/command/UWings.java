@@ -2,6 +2,8 @@ package com.leomelonseeds.ultimaparticles.command;
 
 import org.bukkit.entity.Player;
 
+import com.leomelonseeds.ultimaparticles.inv.Wings;
+
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
@@ -13,7 +15,7 @@ public class UWings extends BaseCommand {
     @Default
     @CommandPermission("trails.wings")
     public void onWing(Player p) {
-        // TODO
+        new Wings(p);
     }
 
 }
