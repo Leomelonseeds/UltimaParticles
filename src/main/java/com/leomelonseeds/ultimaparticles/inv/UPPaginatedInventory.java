@@ -162,10 +162,12 @@ public abstract class UPPaginatedInventory extends UPInventory {
                         ppapi.addActivePlayerParticle(player, ParticleEffect.ITEM, pstyle, Material.valueOf(data));
                         break;
                     case "DUST":
-                        ppapi.addActivePlayerParticle(player, ParticleEffect.DUST, pstyle, OrdinaryColor.RAINBOW);
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.DUST, pstyle, 
+                                data.equals("FUN") ? OrdinaryColor.RANDOM : OrdinaryColor.RAINBOW);
                         break;
                     case "NOTE":
-                        ppapi.addActivePlayerParticle(player, ParticleEffect.NOTE, pstyle, NoteColor.RAINBOW);
+                        ppapi.addActivePlayerParticle(player, ParticleEffect.NOTE, pstyle, 
+                                data.equals("FUN") ? NoteColor.RANDOM : NoteColor.RAINBOW);
                         break;
                     default:
                         ppapi.addActivePlayerParticle(player, ParticleEffect.valueOf(effect), pstyle);
