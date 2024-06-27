@@ -173,7 +173,7 @@ public class Utils {
         }
         
         toRemove.forEach(id -> ppapi.removeActivePlayerParticle(player, id));
-        if (style == UParticleStyle.PLAYER && curStyle != DefaultStyles.NORMAL) {
+        if (style == UParticleStyle.PLAYER && curStyle != null && curStyle != DefaultStyles.NORMAL) {
             ppapi.addActivePlayerParticle(player, ParticleEffect.BLOCK, curStyle, Material.BARRIER);
         }
     }
